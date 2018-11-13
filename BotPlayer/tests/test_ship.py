@@ -1,5 +1,4 @@
 import unittest
-import sys
 import random
 
 from ship import Ship
