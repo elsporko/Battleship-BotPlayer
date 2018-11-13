@@ -2,7 +2,8 @@
 class Ship(object):
     """Class to define ships"""
     def __init__(self):
-        pass
+        # Ships start with 0 damage done
+        self.damage = 0
 
     def ship_factory(ship_type):
         """Build the ships"""
@@ -17,7 +18,15 @@ class Ship(object):
         if ship_type == 'patrolboat':
             return PatrolBoat()
 
+    #TODO Use decorator instead
     ship_factory = staticmethod(ship_factory)
+
+    def do_damage(self, location):
+        self.damage ^= location
+
+    def is_sunk(self):
+        """Is the ship still afloat"""
+        return self.damage == self.mask
 
 class AircraftCarrier(Ship):
     """Build an aircraft carrier"""
@@ -26,7 +35,7 @@ class AircraftCarrier(Ship):
         self.size = 5
         self.id = 'aircraftCarrier'
         self.label = 'AircraftCarrier'
-        self.mask = 31
+        self.mask = 0b11111
 
 class Destroyer(Ship):
     """Build a destroyer"""
@@ -35,7 +44,7 @@ class Destroyer(Ship):
         self.size = 4
         self.id = 'destroyer'
         self.label = 'Destroyer'
-        self.mask = 31
+        self.mask = 0b1111
 
 class Submarine(Ship):
     """Build a submarine"""
@@ -44,7 +53,7 @@ class Submarine(Ship):
         self.size = 3
         self.id = 'submarine'
         self.label = 'Submarine'
-        self.mask = 31
+        self.mask = 0b111
 
 class Battleship(Ship):
     """Build a battleship"""
@@ -53,7 +62,7 @@ class Battleship(Ship):
         self.size = 5
         self.id = 'battleship'
         self.label = 'Battleship'
-        self.mask = 31
+        self.mask = 0b11111
 
 class PatrolBoat(Ship):
     """Build a patrol boat"""
@@ -62,5 +71,4 @@ class PatrolBoat(Ship):
         self.size = 2
         self.id = 'patrolboat'
         self.label = 'PatrolBoat'
-        self.mask = 31
-
+        self.mask = 0b11

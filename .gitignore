@@ -1,2 +1,4 @@
 v_botplayer/
 __pycache__
+.coverage
+*.swp
