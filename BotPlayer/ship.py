@@ -37,6 +37,7 @@ class AircraftCarrier(Ship):
         self.label = 'AircraftCarrier'
         self.mask = 0b11111
 
+
 class Destroyer(Ship):
     """Build a destroyer"""
     def __init__(self):
@@ -63,6 +64,9 @@ class Battleship(Ship):
         self.id = 'battleship'
         self.label = 'Battleship'
         self.mask = 0b11111
+
+    def __repr__(self):
+        return("<Battleship: size: {}, id: {}, label: {} mask: {}>".format(self.size, self.id, self.label, self.mask))
 
 class PatrolBoat(Ship):
     """Build a patrol boat"""
