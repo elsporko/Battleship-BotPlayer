@@ -33,7 +33,7 @@ class AircraftCarrier(Ship):
     def __init__(self):
         super().__init__()
         self.size = 5
-        self.id = 'aircraftCarrier'
+        self.id = 'aircraftcarrier'
         self.label = 'AircraftCarrier'
         self.mask = 0b11111
 

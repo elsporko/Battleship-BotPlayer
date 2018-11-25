@@ -22,7 +22,7 @@ class TestShips(unittest.TestCase):
     def test_aircraftcarrier(self):
         """Create Aircraft Carrier"""
         self.assertEqual(self.ac.size, 5)
-        self.assertEqual(self.ac.id, 'aircraftCarrier')
+        self.assertEqual(self.ac.id, 'aircraftcarrier')
         self.assertEqual(self.ac.label, 'AircraftCarrier')
 
     def test_destroyer(self):

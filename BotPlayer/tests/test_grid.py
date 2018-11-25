@@ -49,21 +49,64 @@ class TestGrid(unittest.TestCase):
         self.assertFalse(self.m.plot_piece(pb, ((-1,1), (1,1))))
         self.assertFalse(self.m.plot_piece(pb, ((9,1), (10,1))))
 
+    def show_pieces(self):
+        print(self.m.chart)
+        print(self.m.ship_map)
+
+    def validate_piece(self, coords, ship):
+        """Test to see if a ship exists where it is expected"""
+        for c in coords:
+            (x,y) = c
+            #print ("Expecting: {} at {}, {}\tFound: {}".format(ship.id, x, y, self.m.chart[x][y]))
+            if (self.m.chart[x][y] != ship.id):
+                #print ("Ooops...Found: ", self.m.chart[x][y])
+                return False
+            #print ("HOORAY!!...Found: ", self.m.chart[x][y])
+        return True
+
     def test_move_piece(self):
         f = Fleet()
         b = f.b # Create battleship
-        """ Move piece back one space"""
+        s = f.s # Create sub
+        ac = f.ac # Create aircraft carrier
+        d = f.d # Create destroyer
+
+        """Move piece back one space"""
         self.m.plot_piece(b, ((1,1), (1,2), (1,3), (1,4), (1,5)))
         self.assertTrue(self.m.move_piece(b.id, -1))
+        self.assertTrue(self.validate_piece(((1, 0), (1,1), (1,2), (1,3), (1,4)), b))
 
         """Move piece forward 3 spaces"""
-        self.m.plot_piece(b, ((2,2), (2,3), (2,4), (2,5), (2,6)))
-        self.assertTrue(self.m.move_piece(b.id, 3))
-
-        """ Move piece back one space out of range"""
-        self.m.plot_piece(b, ((0,1), (1,1), (1,2), (1,3), (1,4)))
-        self.assertFalse(self.m.move_piece(b.id, -1))
-
+        self.m.plot_piece(s, ((2,4), (2,5), (2,6)))
+        self.assertTrue(self.m.move_piece(s.id, 3))
+        self.assertTrue(self.validate_piece(((2,7), (2,8), (2,9)), s))
+ 
+        """Move piece back one space out of range"""
+        ret = self.m.plot_piece(ac, ((3,0), (3,1), (3,2), (3,3), (3,4)))
+        self.assertFalse(self.m.move_piece(ac.id, -1))
+        self.assertTrue(self.validate_piece(((3, 0), (3,1), (3,2), (3,3), (3,4)), ac))
+ 
         """Move piece forward 3 spaces out of range"""
-        self.m.plot_piece(b, ((2,4), (2,5), (2,6), (2,7), (2,8)))
-        self.assertFalse(self.m.move_piece(b.id, 3))
+        self.m.plot_piece(d, ((4,6), (4,7), (4,8), (4,9)))
+        self.assertFalse(self.m.move_piece(d.id, 3))
+        self.assertTrue(self.validate_piece(((4,6), (4,7), (4,8), (4,9)), d))
+
+    def test_pivot_piece(self):
+        """Pivot piece so it ends on a legal space"""
+        f = Fleet()
+        b = f.b # Create battleship
+        s = f.s # Create sub
+        ac = f.ac # Create aircraft carrier
+        d = f.d # Create destroyer
+
+        """Test Pivot sub"""
+        self.m.plot_piece(s, ((5,5), (5,6), (5,7)))
+        self.assertTrue(self.m.pivot_piece(s.id, 2))
+        print("chart: ", self.m.chart)
+        self.assertTrue(self.validate_piece(((3,7), (4,7), (5,7)), s))
+
+        self.m.plot_piece(s, ((1,5), (2,6), (3,7)))
+        self.assertFalse(self.m.pivot_piece(s.id, 0))
+        self.assertTrue(self.validate_piece(((3,7), (4,7), (5,7)), s))
+
+

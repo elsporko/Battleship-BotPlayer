@@ -3,7 +3,7 @@
 class Grid(object):
     def __init__(self):
         # Map of ship locations
-        self.chart =[[0 for x in range(10)] for y in range(10)]
+        self.chart =[[False for x in range(10)] for y in range(10)]
 
 class M_grid(Grid):
     """Means and methods to control own board"""
@@ -12,7 +12,7 @@ class M_grid(Grid):
         self.ship_map = {}
 
     def __detect_collision (self, ship_id, x, y):
-        if self.chart[x][y] != 0 and self.chart[x][y] != ship_id:
+        if self.chart[x][y] and self.chart[x][y] != ship_id:
             return True
         return False
 
@@ -48,20 +48,9 @@ class M_grid(Grid):
 
             tmp_chart[x][y] = ship_type.id
 
-        self_chart = tmp_chart
+        self.chart = tmp_chart
         self.ship_map[ship_type.id] = {"size": ship_type.size, "orientation": orientation, "start_coord": coords[0]}
         return True
-
-    #def build_ship(self, current_location, spaces):
-    #    orientation = current_location.orientation
-    #    x,y = current_location.start_coord
-
-    #    if orientation == 'x':
-    #        x = x + spaces
-    #    if orientation == 'y':
-    #        y = y + spaces
-
-    #    for i in range(current_location.size):
 
     def move_piece(self, ship_id, spaces):
         # move piece takes the ship and the number of spaces to move it where
@@ -80,12 +69,12 @@ class M_grid(Grid):
             start_coord = (x,y)
         elif spaces > 0:
             if orientation == 'x':
-                y = self.ship_map[ship_id]['start_coord'][1] + self.ship_map[ship_id]['size'] - 1
+                y = self.ship_map[ship_id]['start_coord'][1] + spaces
             if orientation == 'y':
-                x = self.ship_map[ship_id]['start_coord'][0] + self.ship_map[ship_id]['size'] - 1
+                x = self.ship_map[ship_id]['start_coord'][0] + spaces
        
         # Work on adding the 'new' spaces first so we can bail if validation fails
-        for i in range (abs(spaces) + 1):
+        for i in range (abs(spaces)):
             if not self.__validate_piece(ship_id, x, y):
                 return False
 
@@ -105,23 +94,70 @@ class M_grid(Grid):
             start_coord = (x,y)
             x,y = self.ship_map[ship_id]['start_coord']
 
-        for i in range (abs(spaces) + 1):
+        for i in range (abs(spaces)):
             if x > len(tmp_chart) or y > len(tmp_chart[x]):
                 break
-            tmp_chart[x][y] = 0
+            tmp_chart[x][y] = False
             if orientation == 'x':
                 y = y + 1
             if orientation == 'y':
                 x = x + 1
 
-        self_chart = tmp_chart
+        self.chart = tmp_chart
         self.ship_map[ship_id]['start_coord'] = start_coord
         return True
 
-    def pivot_piece(self):
-        pass
+    def pivot_piece(self, ship_id, pivot):
+        if pivot >= self.ship_map[ship_id]['size']:
+            return False
+
+        tmp_chart = self.chart
+        pivot_point = self.ship_map[ship_id]['start_coord']
+
+        # Delete existing ship
+        x,y = self.ship_map[ship_id]['start_coord']
+        for i in range (self.ship_map[ship_id]['size']):
+            tmp_chart[x][y] = False
+
+            if self.ship_map[ship_id]['orientation'] == 'x':
+                y = y + 1
+            if self.ship_map[ship_id]['orientation'] == 'y':
+                x = x + 1
+
+        # Determine new start coord and plot new position based on that
+        if self.ship_map[ship_id]['orientation'] == 'x':
+            (x,y) = pivot_point
+            y += pivot
+            x = x - self.ship_map[ship_id]['size'] + 1
+            self.ship_map[ship_id]['orientation'] = 'y'
+        elif self.ship_map[ship_id]['orientation'] == 'y':
+            (x,y) = pivot_point
+            x += pivot
+            y -= self.ship_map[ship_id]['size'] + 1
+            self.ship_map[ship_id]['orientation'] = 'x'
+
+        self.ship_map[ship_id]['start_coord'] = (x,y)
+
+        for i in range (self.ship_map[ship_id]['size']):
+            if not self.__validate_piece(ship_id, x, y):
+                return False
+            tmp_chart[x][y] = ship_id
+            if self.ship_map[ship_id]['orientation'] == 'x':
+                y = y + 1
+            if self.ship_map[ship_id]['orientation'] == 'y':
+                x = x + 1
+
+        self.chart = tmp_chart
+        return True        
 
 class E_grid(Grid):
     """Means and methods to monitor opponent board(s)"""
     def __init__(self):
         super().__init__()
+
+    # Record reported attacks on enemy piece
+    def set_square(self, coord, status):
+        (x,y) = coord
+        self.chart[x][y] = status
+
+        return True
