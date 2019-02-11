@@ -57,11 +57,8 @@ class TestGrid(unittest.TestCase):
         """Test to see if a ship exists where it is expected"""
         for c in coords:
             (x,y) = c
-            #print ("Expecting: {} at {}, {}\tFound: {}".format(ship.id, x, y, self.m.chart[x][y]))
             if (self.m.chart[x][y] != ship.id):
-                #print ("Ooops...Found: ", self.m.chart[x][y])
                 return False
-            #print ("HOORAY!!...Found: ", self.m.chart[x][y])
         return True
 
     def test_move_piece(self):
@@ -102,11 +99,4 @@ class TestGrid(unittest.TestCase):
         """Test Pivot sub"""
         self.m.plot_piece(s, ((5,5), (5,6), (5,7)))
         self.assertTrue(self.m.pivot_piece(s.id, 2))
-        print("chart: ", self.m.chart)
         self.assertTrue(self.validate_piece(((3,7), (4,7), (5,7)), s))
-
-        self.m.plot_piece(s, ((1,5), (2,6), (3,7)))
-        self.assertFalse(self.m.pivot_piece(s.id, 0))
-        self.assertTrue(self.validate_piece(((3,7), (4,7), (5,7)), s))
-
-

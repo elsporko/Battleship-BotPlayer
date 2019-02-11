@@ -59,6 +59,6 @@ class TestFleet(unittest.TestCase):
             self.assertTrue(f.is_sunk())
 
             if f.is_sunk():
-                self.f.sink_ship(f)
+                self.f.sink_ship()
 
         self.assertTrue(self.f.fleet_sunk())

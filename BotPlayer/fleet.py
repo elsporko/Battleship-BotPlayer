@@ -13,7 +13,7 @@ class Fleet(object):
         self.f_damage = 0
         self.f_count = 5
 
-    def sink_ship(self, ship):
+    def sink_ship(self):
         self.f_damage += 1
 
     def fleet_sunk(self):
